@@ -1,0 +1,17 @@
+{
+	"name": "Select Json",
+	"properties": {
+		"content": {
+			"query": "SELECT\n    products.*\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake0413.dfs.core.windows.net/wwi-02/product-json/json-data/*.json',\n        FORMAT='CSV',\n        FIELDTERMINATOR ='0x0b',\n        FIELDQUOTE = '0x0b',\n        ROWTERMINATOR = '0x0b'\n    )\n    WITH (\n        jsonContent NVARCHAR(200)\n    ) AS [raw]\nCROSS APPLY OPENJSON(jsonContent)\nWITH (\n    ProductId INT,\n    Seasonality INT,\n    Price DECIMAL(10,2),\n    Profit DECIMAL(10,2)\n) AS products",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "Select CSV",
+	"properties": {
+		"content": {
+			"query": "SELECT\n   csv.*\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalake0413.dfs.core.windows.net/wwi-02/data-generators/generator-product/generator-product.csv',\n        FORMAT='CSV',\n        FIRSTROW = 1\n    ) WITH (\n        ProductID INT,\n        Seasonality INT,\n        Price DECIMAL(10,2),\n        Profit DECIMAL(10,2)\n    ) as csv\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
