@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "asaworkspace04"
+		},
+		"asadatalake04_accountKey": {
+			"value": ""
+		},
+		"asastore04_connectionString": {
+			"value": ""
+		},
+		"asaworkspace04-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"sqlpool01_connectionString": {
+			"value": ""
+		},
+		"sqlpool01_workload01_connectionString": {
+			"value": ""
+		},
+		"sqlpool01_workload02_connectionString": {
+			"value": ""
+		},
+		"asadatalake04_properties_typeProperties_url": {
+			"value": "https://asadatalake04.dfs.core.windows.net"
+		},
+		"asakeyvault04_properties_typeProperties_baseUrl": {
+			"value": "https://asakeyvault04.vault.azure.net/"
+		},
+		"asaworkspace04-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://asadatalake04.dfs.core.windows.net"
+		}
+	}
+}
