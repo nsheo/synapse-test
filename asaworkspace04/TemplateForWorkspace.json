@@ -317,6 +317,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/ASAMCW_Exercise_2_2018_and_2019_Sales')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "ASAMCW_Exercise_2_2018_and_2019_Sales",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "2.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "ASAMCW_Exercise_2_2018_and_2019_Sales",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"salesdata": {},
+									"sale": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "asastore04",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "staging/test"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/ASAMCW_Exercise_2_2018_and_2019_Sales')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asastore04')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/asamcw_product_asa')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
