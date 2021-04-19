@@ -53,7 +53,7 @@
 					"df.createOrReplaceTempView(\"SaleSmallTemp\")\n",
 					"df.printSchema()"
 				],
-				"execution_count": 1
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -76,7 +76,16 @@
 					"\"\"\")\n",
 					"scala_df.write.synapsesql(\"SQLPool01.wwi_mcw.SaleSmall\", Constants.INTERNAL)"
 				],
-				"execution_count": 2
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"%%spark\n",
+					"val checkDf = spark.read.sqlanalytics(\"SQLPool01.wwi_mcw.SaleSmall\") \n",
+					"checkDf.count"
+				],
+				"execution_count": null
 			}
 		]
 	}
