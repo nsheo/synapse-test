@@ -53,7 +53,7 @@
 					"df.createOrReplaceTempView(\"SaleSmallTemp\")\n",
 					"df.printSchema()"
 				],
-				"execution_count": 3
+				"execution_count": 1
 			},
 			{
 				"cell_type": "code",
@@ -76,7 +76,7 @@
 					"\"\"\")\n",
 					"scala_df.write.synapsesql(\"SQLPool01.wwi_mcw.SaleSmall\", Constants.INTERNAL)"
 				],
-				"execution_count": 4
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
