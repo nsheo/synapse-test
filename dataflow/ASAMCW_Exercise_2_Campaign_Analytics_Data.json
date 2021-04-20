@@ -1,6 +1,7 @@
 {
 	"name": "ASAMCW_Exercise_2_Campaign_Analytics_Data",
 	"properties": {
+		"description": "test",
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
