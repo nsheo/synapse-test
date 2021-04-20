@@ -1,6 +1,7 @@
 {
 	"name": "asamcw_campaignanalytics_asa",
 	"properties": {
+		"description": "ㅅㄷ",
 		"linkedServiceName": {
 			"referenceName": "sqlpool01",
 			"type": "LinkedServiceReference"

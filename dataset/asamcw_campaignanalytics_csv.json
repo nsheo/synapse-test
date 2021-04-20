@@ -1,6 +1,7 @@
 {
 	"name": "asamcw_campaignanalytics_csv",
 	"properties": {
+		"description": "test",
 		"linkedServiceName": {
 			"referenceName": "asaworkspace04-WorkspaceDefaultStorage",
 			"type": "LinkedServiceReference"
