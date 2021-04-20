@@ -1,0 +1,17 @@
+{
+	"name": "Grant User",
+	"properties": {
+		"content": {
+			"query": "CREATE USER [nsheo@ntels.com] FROM EXTERNAL PROVIDER;\nCREATE USER [dakeshi@ntels.com] FROM EXTERNAL PROVIDER;\n\nEXEC sp_addrolemember 'db_owner', 'dakeshi@ntels.com';\nEXEC sp_addrolemember 'db_exporter',[dakeshi@ntels.com];",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "master"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

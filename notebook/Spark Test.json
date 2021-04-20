@@ -1,0 +1,73 @@
+{
+	"name": "Spark Test",
+	"properties": {
+		"bigDataPool": {
+			"referenceName": "SparkPool02",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/e2a06e23-0517-43c4-8fe0-43d39d85749a/resourceGroups/Synapse-MCW/providers/Microsoft.Synapse/workspaces/asaworkspace04/bigDataPools/SparkPool02",
+				"name": "SparkPool02",
+				"type": "Spark",
+				"endpoint": "https://asaworkspace04.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool02",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"%%pyspark\n",
+					"df = spark.read.load('abfss://wwi-02@asadatalake04.dfs.core.windows.net/sale-small/Year=201[8-9]/Quarter=*/Month=*/Day=*/sale-small-*-snappy.parquet', format='parquet')\n",
+					"df.show(10)"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df.count()"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.sql(\"CREATE DATABASE IF NOT EXISTS wwi\")\n",
+					"df.write.mode(\"overwrite\").saveAsTable(\"wwi.SaleSmall\")"
+				],
+				"execution_count": 3
+			}
+		]
+	}
+}

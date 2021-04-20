@@ -2,7 +2,7 @@
 	"name": "SQL Example",
 	"properties": {
 		"content": {
-			"query": "DROP TABLE [wwi_mcw].[SaleSmall];\n\nCREATE USER [nsheo@ntels.com] FROM EXTERNAL PROVIDER;\nCREATE USER [dakeshi@ntels.com] FROM EXTERNAL PROVIDER;\n\nEXEC sp_addrolemember 'db_owner', 'dakeshi@ntels.com';\nEXEC sp_addrolemember 'db_exporter',[dakeshi@ntels.com];",
+			"query": "DROP TABLE [wwi_mcw].[SaleSmall];\n\n",
 			"metadata": {
 				"language": "sql"
 			},
