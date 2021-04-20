@@ -1360,14 +1360,14 @@
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
-					"referenceName": "SparkPool02",
+					"referenceName": "SparkPool01",
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
 					"numExecutors": 2,
 					"conf": {
 						"spark.dynamicAllocation.enabled": "false",
@@ -1385,18 +1385,18 @@
 						"name": "python"
 					},
 					"a365ComputeOptions": {
-						"id": "/subscriptions/e2a06e23-0517-43c4-8fe0-43d39d85749a/resourceGroups/Synapse-MCW/providers/Microsoft.Synapse/workspaces/asaworkspace04/bigDataPools/SparkPool02",
-						"name": "SparkPool02",
+						"id": "/subscriptions/e2a06e23-0517-43c4-8fe0-43d39d85749a/resourceGroups/Synapse-MCW/providers/Microsoft.Synapse/workspaces/asaworkspace04/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
 						"type": "Spark",
-						"endpoint": "https://asaworkspace04.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool02",
+						"endpoint": "https://asaworkspace04.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
 						"auth": {
 							"type": "AAD",
 							"authResource": "https://dev.azuresynapse.net"
 						},
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
-						"cores": 4,
-						"memory": 28,
+						"cores": 8,
+						"memory": 56,
 						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
@@ -1457,7 +1457,7 @@
 							"from azureml.core.webservice import Webservice"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
