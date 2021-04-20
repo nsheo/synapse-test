@@ -49,6 +49,58 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/ASAMCW - Exercise 2 - Copy Campaign Analytics Data')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "test",
+				"activities": [
+					{
+						"name": "Copy Campaign Analytics Data",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "2.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "ASAMCW_Exercise_2_Campaign_Analytics_Data",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"campaignanalyticscsv": {},
+									"campaignanlyticsasa": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "asastore04",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "staging/campaign"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/ASAMCW_Exercise_2_Campaign_Analytics_Data')]",
+				"[concat(variables('workspaceId'), '/linkedServices/asastore04')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/ASAMCW - Exercise 2 - Copy Product Information')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -327,7 +379,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "2.00:00:00",
+							"timeout": "3.00:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -359,11 +411,129 @@
 						}
 					}
 				],
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2021-04-20T01:03:34Z"
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/ASAMCW_Exercise_2_2018_and_2019_Sales')]",
 				"[concat(variables('workspaceId'), '/linkedServices/asastore04')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asamcw_campaignanalytics_asa')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "ㅅㄷ",
+				"linkedServiceName": {
+					"referenceName": "sqlpool01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductCategory",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CampaignName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Analyst",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Revenue",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "RevenueTarget",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "City",
+						"type": "nvarchar"
+					},
+					{
+						"name": "State",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "wwi_mcw",
+					"table": "CampaignAnalytics"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/sqlpool01')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/asamcw_campaignanalytics_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "test",
+				"linkedServiceName": {
+					"referenceName": "asaworkspace04-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "campaignanalytics.csv",
+						"folderPath": "campaign-analytics",
+						"fileSystem": "wwi-02"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/asaworkspace04-WorkspaceDefaultStorage')]"
 			]
 		},
 		{
@@ -1008,12 +1178,97 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/ASAMCW_Exercise_2_Campaign_Analytics_Data')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "test",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "asamcw_campaignanalytics_csv",
+								"type": "DatasetReference"
+							},
+							"name": "campaignanalyticscsv"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "asamcw_campaignanalytics_asa",
+								"type": "DatasetReference"
+							},
+							"name": "campaignanlyticsasa"
+						}
+					],
+					"transformations": [
+						{
+							"name": "mapcampaignanalytics"
+						},
+						{
+							"name": "convertandaddcolumns"
+						},
+						{
+							"name": "selectcampaignanalyticscolumns"
+						}
+					],
+					"script": "source(output(\n\t\t{_col0_} as string,\n\t\t{_col1_} as string,\n\t\t{_col2_} as string,\n\t\t{_col3_} as string,\n\t\t{_col4_} as string,\n\t\t{_col5_} as double,\n\t\t{_col6_} as string,\n\t\t{_col7_} as double,\n\t\t{_col8_} as string,\n\t\t{_col9_} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tskipLines: 1) ~> campaignanalyticscsv\ncampaignanalyticscsv select(mapColumn(\n\t\tRegion = {_col0_},\n\t\tCountry = {_col1_},\n\t\tProductCategory = {_col2_},\n\t\tCampaignName = {_col3_},\n\t\tRevenuePart1 = {_col4_},\n\t\tRevenue = {_col5_},\n\t\tRevenueTargetPart1 = {_col6_},\n\t\tRevenueTarget = {_col7_},\n\t\tCity = {_col8_},\n\t\tState = {_col9_}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> mapcampaignanalytics\nmapcampaignanalytics derive(Revenue = toDecimal(replace(concat(toString(RevenuePart1), toString(Revenue)), '\\\\', ''), 10, 2, '$###,###.##'),\n\t\tRevenueTarget = toDecimal(replace(concat(toString(RevenueTargetPart1), toString(RevenueTarget)), '\\\\', ''), 10, 2, '$###,###.##'),\n\t\tAnalyst = iif(isNull(City), '', replace('DataAnalyst'+ City,' ',''))) ~> convertandaddcolumns\nconvertandaddcolumns select(mapColumn(\n\t\tRegion,\n\t\tCountry,\n\t\tProductCategory,\n\t\tCampaignName,\n\t\tRevenue,\n\t\tRevenueTarget,\n\t\tCity,\n\t\tState,\n\t\tAnalyst\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectcampaignanalyticscolumns\nselectcampaignanalyticscolumns sink(input(\n\t\tRegion as string,\n\t\tCountry as string,\n\t\tProductCategory as string,\n\t\tCampaignName as string,\n\t\tAnalyst as string,\n\t\tRevenue as decimal(10,2),\n\t\tRevenueTarget as decimal(10,2),\n\t\tCity as string,\n\t\tState as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> campaignanlyticsasa"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/asamcw_campaignanalytics_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/asamcw_campaignanalytics_asa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"type": "ManagedIdentity",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Grant User')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE USER [nsheo@ntels.com] FROM EXTERNAL PROVIDER;\nCREATE USER [dakeshi@ntels.com] FROM EXTERNAL PROVIDER;\n\nEXEC sp_addrolemember 'db_owner', 'dakeshi@ntels.com';\nEXEC sp_addrolemember 'db_exporter',[dakeshi@ntels.com];",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"poolName": "Built-in",
+						"databaseName": "master"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Make CampaignAnalystics')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [wwi_mcw].[CampaignAnalytics]\n(\n    [Region] [nvarchar](50)  NULL,\n    [Country] [nvarchar](30)  NOT NULL,\n    [ProductCategory] [nvarchar](50)  NOT NULL,\n    [CampaignName] [nvarchar](500)  NOT NULL,\n    [Analyst] [nvarchar](25) NULL,\n    [Revenue] [decimal](10,2)  NULL,\n    [RevenueTarget] [decimal](10,2)  NULL,\n    [City] [nvarchar](50)  NULL,\n    [State] [nvarchar](25)  NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH ( [Region] ),\n    CLUSTERED COLUMNSTORE INDEX\n);  ",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"poolName": "SQLPool01",
+						"databaseName": "SQLPool01"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
 			},
 			"dependsOn": []
 		},
@@ -1043,7 +1298,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "DROP TABLE [wwi_mcw].[SaleSmall];\n\nCREATE USER [nsheo@ntels.com] FROM EXTERNAL PROVIDER;\nCREATE USER [dakeshi@ntels.com] FROM EXTERNAL PROVIDER;\n\nEXEC sp_addrolemember 'db_owner', 'dakeshi@ntels.com';\nEXEC sp_addrolemember 'db_exporter',[dakeshi@ntels.com];",
+					"query": "DROP TABLE [wwi_mcw].[SaleSmall];\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -1114,9 +1369,21 @@
 					"executorMemory": "28g",
 					"executorCores": 4,
 					"numExecutors": 2,
-					"conf": {}
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
 				},
 				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
 					"language_info": {
 						"name": "python"
 					},
@@ -1131,8 +1398,9 @@
 						},
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
-						"cores": 4,
-						"memory": 28
+						"cores": 8,
+						"memory": 56,
+						"extraHeader": null
 					}
 				},
 				"cells": [
@@ -1141,30 +1409,24 @@
 						"source": [
 							"# Train a classifier to determine product seasonality\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
 						"source": [
 							"First, check if XGBoost is properly installed in the Spark environment (should have version 1.0.2)\n",
 							""
-						]
-					},
-					{
-						"cell_type": "code",
-						"source": [
-							"import pip\n",
-							"pip.get_installed_distributions()"
 						],
-						"outputs": [],
-						"execution_count": null
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
 						"source": [
 							"Import all necessary libraries.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1195,8 +1457,9 @@
 							"from azureml.core.webservice import AciWebservice\n",
 							"from azureml.core.webservice import Webservice"
 						],
+						"attachments": null,
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
@@ -1204,11 +1467,15 @@
 							"## Exploratory data analysis (basic stats)\n",
 							"\n",
 							"Create Spark temporary views for sales and products."
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"metadata": {
+							"microsoft": {
+								"language": "scala"
+							},
 							"diagram": {
 								"activateDiagramType": 2,
 								"chartConfig": {
@@ -1224,13 +1491,7 @@
 									"aggregation": "SUM",
 									"aggByBackend": false
 								},
-								"aggData": {
-									"ProductId": {
-										"1": 913878,
-										"2": 273395,
-										"3": 267388
-									}
-								},
+								"aggData": "{\"ProductId\":{\"1\":913878,\"2\":273395,\"3\":267388}}",
 								"isSummary": false,
 								"previewData": {
 									"filter": null
@@ -1247,6 +1508,7 @@
 							"df2.createOrReplaceTempView(\"product\")\n",
 							"display(df2)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1255,7 +1517,8 @@
 						"source": [
 							"Load daily product sales from the SQL pool.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1279,6 +1542,7 @@
 							"prod_df = spark.sql(sqlQuery)\n",
 							"prod_df.cache()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1286,13 +1550,15 @@
 						"cell_type": "markdown",
 						"source": [
 							"Check the number of records in the data frame (should be around 2.6 million rows)."
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"source": [
 							"prod_df.count()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1301,7 +1567,8 @@
 						"source": [
 							"Display some statistics about the data frame.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1322,15 +1589,7 @@
 									"aggregation": "COUNT",
 									"aggByBackend": false
 								},
-								"aggData": {
-									"summary": {
-										"count": 1,
-										"max": 1,
-										"mean": 1,
-										"min": 1,
-										"stddev": 1
-									}
-								},
+								"aggData": "{\"summary\":{\"count\":1,\"max\":1,\"mean\":1,\"min\":1,\"stddev\":1}}",
 								"isSummary": false,
 								"previewData": {
 									"filter": null
@@ -1341,6 +1600,7 @@
 						"source": [
 							"display(prod_df.describe())"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1349,13 +1609,15 @@
 						"source": [
 							"Pivot the data frame to make daily sale items counts columns. \n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"source": [
 							"prod_prep_df = prod_df.groupBy(['ProductId', 'Seasonality']).pivot('TransactionDateId').sum('TransactionItemsCount').toPandas()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1364,7 +1626,8 @@
 						"source": [
 							"Clean up the nulls and take a look at the result.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1372,6 +1635,7 @@
 							"prod_prep_df = prod_prep_df.fillna(0)\n",
 							"prod_prep_df.head(10)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1382,7 +1646,8 @@
 							"\n",
 							"Standardize features by removing the mean and scaling to unit variance.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1392,6 +1657,7 @@
 							"\n",
 							"X_scale = StandardScaler().fit_transform(X)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1402,7 +1668,8 @@
 							"\n",
 							"Perform dimensionality reduction using Principal Components Analysis and two target components.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1414,6 +1681,7 @@
 							"pca_df = pd.DataFrame(data = principal_components, columns = ['pc1', 'pc2'])\n",
 							"pca_df = pd.concat([pca_df, prod_prep_df[['Seasonality']]], axis = 1)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1424,7 +1692,8 @@
 							"\n",
 							"Note the clear separation of clusters.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1450,6 +1719,7 @@
 							"plt.show()\n",
 							"plt.close()"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1458,7 +1728,8 @@
 						"source": [
 							"Redo the Principal Components Analysis, this time with twenty dimensions.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1478,6 +1749,7 @@
 							"y = prod_prep_df['Seasonality'][:4500]\n",
 							"pca_automl_df = pca_automl_df[:4500]"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1486,7 +1758,8 @@
 						"source": [
 							"Save the PCA components to the SQL pool (you may ignore any warnings).\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1494,19 +1767,24 @@
 							"pca_sdf = spark.createDataFrame(pca_df)\n",
 							"pca_sdf.createOrReplaceTempView(\"productpca\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
 					{
 						"cell_type": "code",
 						"metadata": {
-							"outputCollapsed": true
+							"outputCollapsed": true,
+							"microsoft": {
+								"language": "scala"
+							}
 						},
 						"source": [
 							"%%spark\n",
 							"val df = spark.sqlContext.sql(\"select * from productpca\")\n",
 							"df.write.sqlanalytics(\"SQLPool01.wwi_mcw.ProductPCA\", Constants.INTERNAL)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1517,13 +1795,15 @@
 							"\n",
 							"Split into test and training data sets.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"source": [
 							"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1532,7 +1812,8 @@
 						"source": [
 							"Train the ensemble classifier using XGBoost.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1540,6 +1821,7 @@
 							"model = XGBClassifier()\n",
 							"model.fit(X_train, y_train)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1548,13 +1830,15 @@
 						"source": [
 							"Perform predictions with the newly trained model.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"source": [
 							"y_pred = model.predict(X_test)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1563,7 +1847,8 @@
 						"source": [
 							"Calculate the accuracy of the model using test data.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1571,6 +1856,7 @@
 							"accuracy = accuracy_score(y_test, y_pred)\n",
 							"print(\"Accuracy: %.2f%%\" % (accuracy * 100.0))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1579,7 +1865,8 @@
 						"source": [
 							"Convert trained model to ONNX format.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1590,6 +1877,7 @@
 							"\n",
 							"onnx_model = convert_xgboost(model, initial_types=initial_types)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1598,14 +1886,16 @@
 						"source": [
 							"## Train classifier using Auto ML\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
 						"source": [
 							"Configure the connection to the Azure Machine Learning workspace. The Azure portal provides all the values below.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1618,6 +1908,7 @@
 							"\n",
 							"experiment = Experiment(ws, \"ASAMCW_Product_Seasonality\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1626,7 +1917,8 @@
 						"source": [
 							"Configure the Automated Machine Learning experiment and start it (will run on local compute resources).\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1644,6 +1936,7 @@
 							"\n",
 							"local_run = experiment.submit(automl_classifier_config, show_output=True)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1652,7 +1945,8 @@
 						"source": [
 							"Retrieve and persist the best model\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1661,6 +1955,7 @@
 							"model_path = 'product_seasonality.pkl'\n",
 							"joblib.dump(fitted_model, model_path)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1670,14 +1965,16 @@
 							"## Operationalize\n",
 							"Operationalization means getting the model into the cloud so that others can run it after you close the notebook. We will create a docker container running on Azure Container Instances (ACI) to host our model.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "markdown",
 						"source": [
 							"### Register the model\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1689,6 +1986,7 @@
 							"                       description = \"Product Seasonality Classifier\", \n",
 							"                       workspace = ws)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1698,7 +1996,8 @@
 							"## Develop the scoring script\n",
 							"For deployment, we need a function that will exercise the model with a sampling of data. This has been created for us and is available as part of the model's output artifacts.\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1735,6 +2034,7 @@
 							"    \n",
 							"scoring_script_file_name = 'scoring_script.py'"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1746,6 +2046,7 @@
 							"init()\n",
 							"run(json_test_data)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1754,7 +2055,8 @@
 						"source": [
 							"## Deploy the model as a Web Service on Azure Container Instances (ACI)\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -1769,6 +2071,7 @@
 							"myenv = Environment.from_conda_specification(name=\"myenv\", file_path=environment_config_file)\n",
 							"myenv.register(workspace=ws)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1783,6 +2086,7 @@
 							"aci_service.wait_for_deployment(show_output = True)\n",
 							"print(aci_service.state)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1791,13 +2095,15 @@
 						"source": [
 							"## Call the Web Service\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
 						"source": [
 							"aci_service.run(json_test_data)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					}
@@ -1810,6 +2116,8 @@
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"nbformat": 0,
+				"nbformat_minor": 0,
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -1845,6 +2153,7 @@
 							"//세션내부에서 사용가능하도록 temp table 생성\n",
 							"scaladf.createOrReplaceTempView(\"nycTaxi\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 8
 					},
@@ -1854,6 +2163,7 @@
 							"%%pyspark\n",
 							"dfPy = spark.sql(\"SELECT * FROM nycTaxi\") "
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 9
 					},
@@ -1864,6 +2174,7 @@
 							"spark.sql(\"CREATE DATABASE IF NOT EXISTS nyctaxi\")\n",
 							"dfPy.write.mode(\"overwrite\").saveAsTable(\"nyctaxi.trip\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 10
 					},
@@ -1904,6 +2215,7 @@
 							"GROUP BY PassengerCount\n",
 							"ORDER BY PassengerCount"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 15
 					},
@@ -1923,6 +2235,7 @@
 							"#display(df)\n",
 							"df.write.saveAsTable(\"nyctaxi.passengercountstats\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 16
 					}
@@ -1935,6 +2248,8 @@
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"nbformat": 0,
+				"nbformat_minor": 0,
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -1968,6 +2283,7 @@
 							"df = spark.read.load('abfss://wwi-02@asadatalake0413.dfs.core.windows.net/sale-small/Year=2010/Quarter=Q4/Month=12/Day=20101231/sale-small-20101231-snappy.parquet', format='parquet')\r\n",
 							"display(df.limit(10))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -1987,6 +2303,7 @@
 							")\n",
 							"profitByDateProduct.show(100)"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					}
@@ -1999,6 +2316,8 @@
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"nbformat": 0,
+				"nbformat_minor": 0,
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -2030,7 +2349,8 @@
 						"source": [
 							"## SQLPool 데이터 불러오기(scala)\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -2047,6 +2367,7 @@
 							"scaladf.createOrReplaceTempView(\"wwiProduct\")\n",
 							"//df.write.mode(\"overwrite\").saveAsTable(\"default.wwiProduct\")"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -2055,7 +2376,8 @@
 						"source": [
 							"## SQL 조회\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -2092,6 +2414,7 @@
 							"%%sql\n",
 							"SELECT * FROM wwiProduct LIMIT 10"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 4
 					},
@@ -2100,7 +2423,8 @@
 						"source": [
 							"## Pyspark로 임시테이블 조회/Dataframe로딩\n",
 							""
-						]
+						],
+						"attachments": null
 					},
 					{
 						"cell_type": "code",
@@ -2138,8 +2462,182 @@
 							"df = spark.sql(\"SELECT * FROM wwiProduct\") \n",
 							"display(df.limit(10))"
 						],
+						"attachments": null,
 						"outputs": [],
 						"execution_count": 5
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Spark Test')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"bigDataPool": {
+					"referenceName": "SparkPool02",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/e2a06e23-0517-43c4-8fe0-43d39d85749a/resourceGroups/Synapse-MCW/providers/Microsoft.Synapse/workspaces/asaworkspace04/bigDataPools/SparkPool02",
+						"name": "SparkPool02",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace04.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool02",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"%%pyspark\n",
+							"df = spark.read.load('abfss://wwi-02@asadatalake04.dfs.core.windows.net/sale-small/Year=201[8-9]/Quarter=*/Month=*/Day=*/sale-small-*-snappy.parquet', format='parquet')\n",
+							"df.show(10)"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"df.count()"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"spark.sql(\"CREATE DATABASE IF NOT EXISTS wwi\")\n",
+							"df.write.mode(\"overwrite\").saveAsTable(\"wwi.SaleSmall\")"
+						],
+						"outputs": [],
+						"execution_count": 3
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SparkToSQLPool Test')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"bigDataPool": {
+					"referenceName": "SparkPool01",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/e2a06e23-0517-43c4-8fe0-43d39d85749a/resourceGroups/Synapse-MCW/providers/Microsoft.Synapse/workspaces/asaworkspace04/bigDataPools/SparkPool01",
+						"name": "SparkPool01",
+						"type": "Spark",
+						"endpoint": "https://asaworkspace04.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkPool01",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"%%pyspark\n",
+							"df = spark.read.load('abfss://wwi-02@asadatalake04.dfs.core.windows.net/sale-small/Year=2018/Quarter=*/Month=*/Day=*/sale-small-*-snappy.parquet', format='parquet')\n",
+							"df.count()\n",
+							"df.createOrReplaceTempView(\"SaleSmallTemp\")\n",
+							"df.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"%%spark\n",
+							"val scala_df = spark.sqlContext.sql(\"\"\"\n",
+							"  select \n",
+							"    TransactionId, \n",
+							"    CustomerId, \n",
+							"    ProductId, \n",
+							"    cast(Quantity as int) Quantity, \n",
+							"    Price, \n",
+							"    TotalAmount, \n",
+							"    TransactionDate as TransactionDateId, \n",
+							"    ProfitAmount, \n",
+							"    cast(Hour as int) Hour, \n",
+							"    cast(Minute as int) Minute, \n",
+							"    StoreId \n",
+							"   from SaleSmallTemp\n",
+							"\"\"\")\n",
+							"scala_df.write.synapsesql(\"SQLPool01.wwi_mcw.SaleSmall\", Constants.INTERNAL)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"%%spark\n",
+							"val checkDf = spark.read.sqlanalytics(\"SQLPool01.wwi_mcw.SaleSmall\") \n",
+							"checkDf.count"
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
