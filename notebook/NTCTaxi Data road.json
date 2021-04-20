@@ -1,6 +1,8 @@
 {
 	"name": "NTCTaxi Data road",
 	"properties": {
+		"nbformat": 0,
+		"nbformat_minor": 0,
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -24,8 +26,7 @@
 			},
 			"language_info": {
 				"name": "scala"
-			},
-			"sessionKeepAliveTimeout": 30
+			}
 		},
 		"cells": [
 			{
@@ -37,6 +38,7 @@
 					"//세션내부에서 사용가능하도록 temp table 생성\n",
 					"scaladf.createOrReplaceTempView(\"nycTaxi\")"
 				],
+				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -45,6 +47,7 @@
 					"%%pyspark\n",
 					"dfPy = spark.sql(\"SELECT * FROM nycTaxi\") "
 				],
+				"attachments": null,
 				"execution_count": 9
 			},
 			{
@@ -54,6 +57,7 @@
 					"spark.sql(\"CREATE DATABASE IF NOT EXISTS nyctaxi\")\n",
 					"dfPy.write.mode(\"overwrite\").saveAsTable(\"nyctaxi.trip\")"
 				],
+				"attachments": null,
 				"execution_count": 10
 			},
 			{
@@ -93,6 +97,7 @@
 					"GROUP BY PassengerCount\n",
 					"ORDER BY PassengerCount"
 				],
+				"attachments": null,
 				"execution_count": 15
 			},
 			{
@@ -111,6 +116,7 @@
 					"#display(df)\n",
 					"df.write.saveAsTable(\"nyctaxi.passengercountstats\")"
 				],
+				"attachments": null,
 				"execution_count": 16
 			}
 		]

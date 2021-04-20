@@ -1,6 +1,8 @@
 {
 	"name": "Raw Paruqet on Spark",
 	"properties": {
+		"nbformat": 0,
+		"nbformat_minor": 0,
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -24,8 +26,7 @@
 			},
 			"language_info": {
 				"name": "python"
-			},
-			"sessionKeepAliveTimeout": 30
+			}
 		},
 		"cells": [
 			{
@@ -35,6 +36,7 @@
 					"df = spark.read.load('abfss://wwi-02@asadatalake0413.dfs.core.windows.net/sale-small/Year=2010/Quarter=Q4/Month=12/Day=20101231/sale-small-20101231-snappy.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -53,6 +55,7 @@
 					")\n",
 					"profitByDateProduct.show(100)"
 				],
+				"attachments": null,
 				"execution_count": null
 			}
 		]

@@ -44,9 +44,8 @@
 				"nodeCount": 3,
 				"cores": 8,
 				"memory": 56,
-				"automaticScaleJobs": false
-			},
-			"sessionKeepAliveTimeout": 30
+				"extraHeader": null
+			}
 		},
 		"cells": [
 			{
@@ -54,21 +53,24 @@
 				"source": [
 					"# Train a classifier to determine product seasonality\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
 					"First, check if XGBoost is properly installed in the Spark environment (should have version 1.0.2)\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
 					"Import all necessary libraries.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -99,6 +101,7 @@
 					"from azureml.core.webservice import AciWebservice\n",
 					"from azureml.core.webservice import Webservice"
 				],
+				"attachments": null,
 				"execution_count": 1
 			},
 			{
@@ -107,7 +110,8 @@
 					"## Exploratory data analysis (basic stats)\n",
 					"\n",
 					"Create Spark temporary views for sales and products."
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -147,6 +151,7 @@
 					"df2.createOrReplaceTempView(\"product\")\n",
 					"display(df2)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -154,7 +159,8 @@
 				"source": [
 					"Load daily product sales from the SQL pool.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -178,19 +184,22 @@
 					"prod_df = spark.sql(sqlQuery)\n",
 					"prod_df.cache()"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
 					"Check the number of records in the data frame (should be around 2.6 million rows)."
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"prod_df.count()"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -198,7 +207,8 @@
 				"source": [
 					"Display some statistics about the data frame.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -230,6 +240,7 @@
 				"source": [
 					"display(prod_df.describe())"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -237,13 +248,15 @@
 				"source": [
 					"Pivot the data frame to make daily sale items counts columns. \n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"prod_prep_df = prod_df.groupBy(['ProductId', 'Seasonality']).pivot('TransactionDateId').sum('TransactionItemsCount').toPandas()"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -251,7 +264,8 @@
 				"source": [
 					"Clean up the nulls and take a look at the result.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -259,6 +273,7 @@
 					"prod_prep_df = prod_prep_df.fillna(0)\n",
 					"prod_prep_df.head(10)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -268,7 +283,8 @@
 					"\n",
 					"Standardize features by removing the mean and scaling to unit variance.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -278,6 +294,7 @@
 					"\n",
 					"X_scale = StandardScaler().fit_transform(X)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -287,7 +304,8 @@
 					"\n",
 					"Perform dimensionality reduction using Principal Components Analysis and two target components.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -299,6 +317,7 @@
 					"pca_df = pd.DataFrame(data = principal_components, columns = ['pc1', 'pc2'])\n",
 					"pca_df = pd.concat([pca_df, prod_prep_df[['Seasonality']]], axis = 1)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -308,7 +327,8 @@
 					"\n",
 					"Note the clear separation of clusters.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -334,6 +354,7 @@
 					"plt.show()\n",
 					"plt.close()"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -341,7 +362,8 @@
 				"source": [
 					"Redo the Principal Components Analysis, this time with twenty dimensions.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -361,6 +383,7 @@
 					"y = prod_prep_df['Seasonality'][:4500]\n",
 					"pca_automl_df = pca_automl_df[:4500]"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -368,7 +391,8 @@
 				"source": [
 					"Save the PCA components to the SQL pool (you may ignore any warnings).\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -376,6 +400,7 @@
 					"pca_sdf = spark.createDataFrame(pca_df)\n",
 					"pca_sdf.createOrReplaceTempView(\"productpca\")"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -391,6 +416,7 @@
 					"val df = spark.sqlContext.sql(\"select * from productpca\")\n",
 					"df.write.sqlanalytics(\"SQLPool01.wwi_mcw.ProductPCA\", Constants.INTERNAL)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -400,13 +426,15 @@
 					"\n",
 					"Split into test and training data sets.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -414,7 +442,8 @@
 				"source": [
 					"Train the ensemble classifier using XGBoost.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -422,6 +451,7 @@
 					"model = XGBClassifier()\n",
 					"model.fit(X_train, y_train)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -429,13 +459,15 @@
 				"source": [
 					"Perform predictions with the newly trained model.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"y_pred = model.predict(X_test)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -443,7 +475,8 @@
 				"source": [
 					"Calculate the accuracy of the model using test data.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -451,6 +484,7 @@
 					"accuracy = accuracy_score(y_test, y_pred)\n",
 					"print(\"Accuracy: %.2f%%\" % (accuracy * 100.0))"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -458,7 +492,8 @@
 				"source": [
 					"Convert trained model to ONNX format.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -469,6 +504,7 @@
 					"\n",
 					"onnx_model = convert_xgboost(model, initial_types=initial_types)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -476,14 +512,16 @@
 				"source": [
 					"## Train classifier using Auto ML\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
 					"Configure the connection to the Azure Machine Learning workspace. The Azure portal provides all the values below.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -496,6 +534,7 @@
 					"\n",
 					"experiment = Experiment(ws, \"ASAMCW_Product_Seasonality\")"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -503,7 +542,8 @@
 				"source": [
 					"Configure the Automated Machine Learning experiment and start it (will run on local compute resources).\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -521,6 +561,7 @@
 					"\n",
 					"local_run = experiment.submit(automl_classifier_config, show_output=True)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -528,7 +569,8 @@
 				"source": [
 					"Retrieve and persist the best model\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -537,6 +579,7 @@
 					"model_path = 'product_seasonality.pkl'\n",
 					"joblib.dump(fitted_model, model_path)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -545,14 +588,16 @@
 					"## Operationalize\n",
 					"Operationalization means getting the model into the cloud so that others can run it after you close the notebook. We will create a docker container running on Azure Container Instances (ACI) to host our model.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "markdown",
 				"source": [
 					"### Register the model\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -564,6 +609,7 @@
 					"                       description = \"Product Seasonality Classifier\", \n",
 					"                       workspace = ws)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -572,7 +618,8 @@
 					"## Develop the scoring script\n",
 					"For deployment, we need a function that will exercise the model with a sampling of data. This has been created for us and is available as part of the model's output artifacts.\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -609,6 +656,7 @@
 					"    \n",
 					"scoring_script_file_name = 'scoring_script.py'"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -619,6 +667,7 @@
 					"init()\n",
 					"run(json_test_data)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -626,7 +675,8 @@
 				"source": [
 					"## Deploy the model as a Web Service on Azure Container Instances (ACI)\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
@@ -641,6 +691,7 @@
 					"myenv = Environment.from_conda_specification(name=\"myenv\", file_path=environment_config_file)\n",
 					"myenv.register(workspace=ws)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -654,6 +705,7 @@
 					"aci_service.wait_for_deployment(show_output = True)\n",
 					"print(aci_service.state)"
 				],
+				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -661,13 +713,15 @@
 				"source": [
 					"## Call the Web Service\n",
 					""
-				]
+				],
+				"attachments": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"aci_service.run(json_test_data)"
 				],
+				"attachments": null,
 				"execution_count": null
 			}
 		]
