@@ -1,9 +1,9 @@
 {
-	"name": "ASAMCW - Exercise 2 - Copy Campaign Analytics Data_support_live",
+	"name": "ASAMCW - Exercise 2 - Copy Campaign Analytics Data",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Campaign Analytics Data_support_live",
+				"name": "Copy Campaign Analytics Data",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
