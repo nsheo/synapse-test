@@ -403,7 +403,7 @@
 								"folderPath": "staging/test"
 							},
 							"compute": {
-								"coreCount": 16,
+								"coreCount": 32,
 								"computeType": "MemoryOptimized"
 							},
 							"traceLevel": "Fine"
@@ -1396,15 +1396,12 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 3,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 56
+					}
 				},
 				"cells": [
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"# Train a classifier to determine product seasonality\n",
 							""
@@ -1412,7 +1409,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"First, check if XGBoost is properly installed in the Spark environment (should have version 1.0.2)\n",
 							""
@@ -1420,7 +1416,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Import all necessary libraries.\n",
 							""
@@ -1428,7 +1423,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer\n",
 							"from sklearn.decomposition import PCA\n",
@@ -1461,7 +1455,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Exploratory data analysis (basic stats)\n",
 							"\n",
@@ -1511,7 +1504,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Load daily product sales from the SQL pool.\n",
 							""
@@ -1519,7 +1511,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"sqlQuery = \"\"\"\n",
 							"SELECT\n",
@@ -1545,14 +1536,12 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Check the number of records in the data frame (should be around 2.6 million rows)."
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"prod_df.count()"
 						],
@@ -1561,7 +1550,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Display some statistics about the data frame.\n",
 							""
@@ -1601,7 +1589,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Pivot the data frame to make daily sale items counts columns. \n",
 							""
@@ -1609,7 +1596,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"prod_prep_df = prod_df.groupBy(['ProductId', 'Seasonality']).pivot('TransactionDateId').sum('TransactionItemsCount').toPandas()"
 						],
@@ -1618,7 +1604,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Clean up the nulls and take a look at the result.\n",
 							""
@@ -1626,7 +1611,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"prod_prep_df = prod_prep_df.fillna(0)\n",
 							"prod_prep_df.head(10)"
@@ -1636,7 +1620,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Isolate features and prediction classes.\n",
 							"\n",
@@ -1646,7 +1629,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"X = prod_prep_df.iloc[:, 2:].values\n",
 							"y = prod_prep_df['Seasonality'].values\n",
@@ -1658,7 +1640,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Use PCA for dimensionality reduction\n",
 							"\n",
@@ -1668,7 +1649,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"pca = PCA(n_components=2)\n",
 							"principal_components = pca.fit_transform(X_scale)\n",
@@ -1682,7 +1662,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Display the products data frame in two dimensions (mapped to the two principal components).\n",
 							"\n",
@@ -1692,7 +1671,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"fig = plt.figure(figsize = (6,6))\n",
 							"ax = fig.add_subplot(1,1,1) \n",
@@ -1720,7 +1698,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Redo the Principal Components Analysis, this time with twenty dimensions.\n",
 							""
@@ -1728,7 +1705,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"def col_name(x):\n",
 							"    return f'f{x:02}'\n",
@@ -1750,7 +1726,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Save the PCA components to the SQL pool (you may ignore any warnings).\n",
 							""
@@ -1758,7 +1733,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"pca_sdf = spark.createDataFrame(pca_df)\n",
 							"pca_sdf.createOrReplaceTempView(\"productpca\")"
@@ -1783,7 +1757,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Train ensemble of trees classifier (using XGBoost)\n",
 							"\n",
@@ -1793,7 +1766,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)"
 						],
@@ -1802,7 +1774,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Train the ensemble classifier using XGBoost.\n",
 							""
@@ -1810,7 +1781,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"model = XGBClassifier()\n",
 							"model.fit(X_train, y_train)"
@@ -1820,7 +1790,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Perform predictions with the newly trained model.\n",
 							""
@@ -1828,7 +1797,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"y_pred = model.predict(X_test)"
 						],
@@ -1837,7 +1805,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Calculate the accuracy of the model using test data.\n",
 							""
@@ -1845,7 +1812,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"accuracy = accuracy_score(y_test, y_pred)\n",
 							"print(\"Accuracy: %.2f%%\" % (accuracy * 100.0))"
@@ -1855,7 +1821,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Convert trained model to ONNX format.\n",
 							""
@@ -1863,7 +1828,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"initial_types = [\n",
 							"    ('input', FloatTensorType([1, 20]))\n",
@@ -1876,7 +1840,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Train classifier using Auto ML\n",
 							""
@@ -1884,7 +1847,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Configure the connection to the Azure Machine Learning workspace. The Azure portal provides all the values below.\n",
 							""
@@ -1892,7 +1854,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"subscription_id= 'e2a06e23-0517-43c4-8fe0-43d39d85749a'\n",
 							"resource_group= 'Synapse-MCW'\n",
@@ -1907,7 +1868,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Configure the Automated Machine Learning experiment and start it (will run on local compute resources).\n",
 							""
@@ -1915,7 +1875,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"automl_classifier_config = AutoMLConfig(\n",
 							"        task='classification',        \n",
@@ -1935,7 +1894,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"Retrieve and persist the best model\n",
 							""
@@ -1943,7 +1901,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"best_run, fitted_model = local_run.get_output()\n",
 							"model_path = 'product_seasonality.pkl'\n",
@@ -1954,7 +1911,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Operationalize\n",
 							"Operationalization means getting the model into the cloud so that others can run it after you close the notebook. We will create a docker container running on Azure Container Instances (ACI) to host our model.\n",
@@ -1963,7 +1919,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"### Register the model\n",
 							""
@@ -1971,7 +1926,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"model_name = \"ProductSeasonalityClassifier\"\n",
 							"registered_model = Model.register(model_path = model_path, # this points to a local file\n",
@@ -1985,7 +1939,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Develop the scoring script\n",
 							"For deployment, we need a function that will exercise the model with a sampling of data. This has been created for us and is available as part of the model's output artifacts.\n",
@@ -1994,7 +1947,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"scoring_script = \"\"\"\n",
 							"import json\n",
@@ -2033,7 +1985,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"#test locally\n",
 							"json_test_data = X_test.to_json()\n",
@@ -2045,7 +1996,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Deploy the model as a Web Service on Azure Container Instances (ACI)\n",
 							""
@@ -2053,7 +2003,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# obtain conda dependencies from the automl run and save the file locally\n",
 							"environment_config_file = 'conda_env.yml'\n",
@@ -2070,7 +2019,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Configure and deploy the web service to Azure Container Instances\n",
 							"inference_config = InferenceConfig(environment=myenv, entry_script=scoring_script_file_name)\n",
@@ -2085,7 +2033,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Call the Web Service\n",
 							""
@@ -2093,7 +2040,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"aci_service.run(json_test_data)"
 						],
@@ -2193,11 +2139,7 @@
 								"aggData": "{\"PassengerCount\":{\"12544348.589990655\":1,\"13091570.279999683\":3,\"172174.32999999798\":4,\"2635668.6600008374\":2,\"296384.39000000234\":6,\"3.6\":8,\"484437.6800000045\":5}}",
 								"isSummary": false,
 								"previewData": {
-									"filter": null,
-									"table": {
-										"rows": [],
-										"schema": {}
-									}
+									"filter": null
 								},
 								"isSql": true
 							}
