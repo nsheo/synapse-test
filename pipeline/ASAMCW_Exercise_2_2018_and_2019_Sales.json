@@ -27,7 +27,7 @@
 						"folderPath": "staging/test"
 					},
 					"compute": {
-						"coreCount": 32,
+						"coreCount": 8,
 						"computeType": "MemoryOptimized"
 					},
 					"traceLevel": "Fine"
